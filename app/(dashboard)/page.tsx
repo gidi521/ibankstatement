@@ -11,8 +11,26 @@ import {
   PlusCircle,
   MinusCircle,
 } from "lucide-react";
+import { useRef } from "react";
+import { useRouter } from 'next/navigation';
 
 export default function HomePage() {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
+  const handleClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+  
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      uploadFiles(files);
+    }
+  };
+  
+
   const banks = [
     {
       name: "BNP Paribas",
@@ -80,6 +98,71 @@ export default function HomePage() {
   ];
 
   const [expandedFAQs, setExpandedFAQs] = useState<Record<number, boolean>>({});
+  const [isDragging, setIsDragging] = useState(false);
+  const dropRef = useRef<HTMLDivElement>(null);
+
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      uploadFiles(files);
+    }
+  };
+
+  const uploadFiles = async (files: FileList) => {
+    // 验证文件类型
+    for (let i = 0; i < files.length; i++) {
+      if (files[i].type !== "application/pdf") {
+        alert("只支持PDF文件");
+        return;
+      }
+      if (files[i].size > 50 * 1024 * 1024) { // 50MB限制
+        alert("文件大小不能超过50MB");
+        return;
+      }
+    }
+  
+    const formData = new FormData();
+    for (let i = 0; i < files.length; i++) {
+      formData.append("files", files[i]);
+    }
+    try {
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+      if (response.ok) {
+        console.log("文件上传成功");
+        // 跳转到converter页面
+        router.push('/converter');
+      } else {
+        console.error(data.error);
+      }
+    } catch (error) {
+      console.error('文件上传失败:', error);
+    }
+  };
 
   return (
     <main>
@@ -110,11 +193,29 @@ export default function HomePage() {
               </div>
             </div>
             <div className="mt-12 relative sm:max-w-lg sm:mx-auto lg:mt-0 lg:max-w-none lg:mx-0 lg:col-span-6 lg:flex lg:items-center">
-              <div className="border-dashed border-2 border-gray-300 bg-blue-50 hover:bg-blue-100 h-75 w-120 rounded-lg flex flex-col items-center justify-center cursor-pointer">
+              <div
+                ref={dropRef}
+                onClick={handleClick}
+                className={`border-dashed border-2 ${
+                  isDragging ? "border-blue-500" : "border-gray-300"
+                } bg-blue-50 hover:bg-blue-100 h-75 w-120 rounded-lg flex flex-col items-center justify-center cursor-pointer`}
+                onDragEnter={handleDragEnter}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+              >
                 <CloudUpload className="h-20 w-20 text-blue-400 mb-4" />
                 <p className="text-gray-500">
                   Click to upload or drag and drop
                 </p>
+                <input
+                  type="file"
+                  accept=".pdf"
+                  className="hidden"
+                  onChange={handleFileInputChange}
+                  ref={fileInputRef}
+                  multiple  // 添加multiple属性以支持多文件选择
+                />
               </div>
             </div>
           </div>

@@ -6,7 +6,6 @@ export default async function ConverterPage() {
   return (
     <main>
       <UploadArea />
-      <UploadedFiles />
       <ConversionLibrary />
     </main>
   );
