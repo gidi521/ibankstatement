@@ -9,6 +9,7 @@ type UserContextType = {
 
 const UserContext = createContext<UserContextType | null>(null);
 
+// 用户上下文相关的React Hook和Provider组件
 export function useUser(): UserContextType {
   let context = useContext(UserContext);
   if (context === null) {
@@ -17,6 +18,7 @@ export function useUser(): UserContextType {
   return context;
 }
 
+// 用户上下文提供者组件
 export function UserProvider({
   children,
   userPromise

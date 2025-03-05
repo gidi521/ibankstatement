@@ -4,13 +4,14 @@ import { activityLogs, teamMembers, teams, users } from './schema';
 import { cookies } from 'next/headers';
 import { verifyToken } from '@/lib/auth/session';
 
+// 获取当前用户信息
 export async function getUser() {
-  const sessionCookie = (await cookies()).get('session');
+  const sessionCookie = (await cookies()).get('session'); // 获取session cookie
   if (!sessionCookie || !sessionCookie.value) {
     return null;
   }
 
-  const sessionData = await verifyToken(sessionCookie.value);
+  const sessionData = await verifyToken(sessionCookie.value); // 验证token
   if (
     !sessionData ||
     !sessionData.user ||
@@ -19,10 +20,11 @@ export async function getUser() {
     return null;
   }
 
-  if (new Date(sessionData.expires) < new Date()) {
+  if (new Date(sessionData.expires) < new Date()) { // 检查token是否过期
     return null;
   }
 
+  // 查询用户信息
   const user = await db
     .select()
     .from(users)
@@ -36,6 +38,7 @@ export async function getUser() {
   return user[0];
 }
 
+// 根据Stripe客户ID获取团队信息
 export async function getTeamByStripeCustomerId(customerId: string) {
   const result = await db
     .select()
@@ -46,6 +49,7 @@ export async function getTeamByStripeCustomerId(customerId: string) {
   return result.length > 0 ? result[0] : null;
 }
 
+// 更新团队订阅信息
 export async function updateTeamSubscription(
   teamId: number,
   subscriptionData: {
@@ -59,11 +63,12 @@ export async function updateTeamSubscription(
     .update(teams)
     .set({
       ...subscriptionData,
-      updatedAt: new Date(),
+      updatedAt: new Date(), // 更新时间为当前时间
     })
     .where(eq(teams.id, teamId));
 }
 
+// 获取用户及其关联的团队信息
 export async function getUserWithTeam(userId: number) {
   const result = await db
     .select({
@@ -78,8 +83,9 @@ export async function getUserWithTeam(userId: number) {
   return result[0];
 }
 
+// 获取用户的活动日志
 export async function getActivityLogs() {
-  const user = await getUser();
+  const user = await getUser(); // 获取当前用户
   if (!user) {
     throw new Error('User not authenticated');
   }
@@ -95,10 +101,11 @@ export async function getActivityLogs() {
     .from(activityLogs)
     .leftJoin(users, eq(activityLogs.userId, users.id))
     .where(eq(activityLogs.userId, user.id))
-    .orderBy(desc(activityLogs.timestamp))
-    .limit(10);
+    .orderBy(desc(activityLogs.timestamp)) // 按时间降序排列
+    .limit(10); // 限制返回10条记录
 }
 
+// 获取用户所属团队的详细信息
 export async function getTeamForUser(userId: number) {
   const result = await db.query.users.findFirst({
     where: eq(users.id, userId),
