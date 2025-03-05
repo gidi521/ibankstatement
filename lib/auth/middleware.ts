@@ -3,20 +3,17 @@ import { TeamDataWithMembers, User } from '@/lib/db/schema';
 import { getTeamForUser, getUser } from '@/lib/db/queries';
 import { redirect } from 'next/navigation';
 
-// 定义Action状态类型
 export type ActionState = {
   error?: string;
   success?: string;
   [key: string]: any; // This allows for additional properties
 };
 
-// 带验证的Action函数类型
 type ValidatedActionFunction<S extends z.ZodType<any, any>, T> = (
   data: z.infer<S>,
   formData: FormData
 ) => Promise<T>;
 
-// 创建带验证的Action
 export function validatedAction<S extends z.ZodType<any, any>, T>(
   schema: S,
   action: ValidatedActionFunction<S, T>
@@ -37,7 +34,6 @@ type ValidatedActionWithUserFunction<S extends z.ZodType<any, any>, T> = (
   user: User
 ) => Promise<T>;
 
-// 带用户验证的Action
 export function validatedActionWithUser<S extends z.ZodType<any, any>, T>(
   schema: S,
   action: ValidatedActionWithUserFunction<S, T>
@@ -62,7 +58,6 @@ type ActionWithTeamFunction<T> = (
   team: TeamDataWithMembers
 ) => Promise<T>;
 
-// 带团队验证的Action
 export function withTeam<T>(action: ActionWithTeamFunction<T>) {
   return async (formData: FormData): Promise<T> => {
     const user = await getUser();

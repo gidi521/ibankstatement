@@ -1,11 +1,10 @@
 import * as React from "react"
 
-import { cn } from "@/lib/utils" // 工具函数，用于合并class
-// 输入框组件属性接口
+import { cn } from "@/lib/utils"
+
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {}
 
-// 输入框组件
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {
     return (

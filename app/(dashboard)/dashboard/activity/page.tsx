@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; // 卡片组件
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Settings,
   LogOut,
@@ -10,11 +10,10 @@ import {
   Mail,
   CheckCircle,
   type LucideIcon,
-} from 'lucide-react'; // 图标组件
-import { ActivityType } from '@/lib/db/schema'; // 活动类型定义
-import { getActivityLogs } from '@/lib/db/queries'; // 获取活动日志的查询
+} from 'lucide-react';
+import { ActivityType } from '@/lib/db/schema';
+import { getActivityLogs } from '@/lib/db/queries';
 
-// 活动类型与图标的映射
 const iconMap: Record<ActivityType, LucideIcon> = {
   [ActivityType.SIGN_UP]: UserPlus,
   [ActivityType.SIGN_IN]: UserCog,
@@ -28,98 +27,95 @@ const iconMap: Record<ActivityType, LucideIcon> = {
   [ActivityType.ACCEPT_INVITATION]: CheckCircle,
 };
 
-// 获取相对时间
 function getRelativeTime(date: Date) {
   const now = new Date();
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-  if (diffInSeconds < 60) return 'just now'; // 刚刚
+  if (diffInSeconds < 60) return 'just now';
   if (diffInSeconds < 3600)
-    return `${Math.floor(diffInSeconds / 60)} minutes ago`; // 几分钟前
+    return `${Math.floor(diffInSeconds / 60)} minutes ago`;
   if (diffInSeconds < 86400)
-    return `${Math.floor(diffInSeconds / 3600)} hours ago`; // 几小时前
+    return `${Math.floor(diffInSeconds / 3600)} hours ago`;
   if (diffInSeconds < 604800)
-    return `${Math.floor(diffInSeconds / 86400)} days ago`; // 几天前
-  return date.toLocaleDateString(); // 返回日期
+    return `${Math.floor(diffInSeconds / 86400)} days ago`;
+  return date.toLocaleDateString();
 }
 
-// 格式化活动类型为可读字符串
 function formatAction(action: ActivityType): string {
   switch (action) {
     case ActivityType.SIGN_UP:
-      return 'You signed up'; // 您已注册
+      return 'You signed up';
     case ActivityType.SIGN_IN:
-      return 'You signed in'; // 您已登录
+      return 'You signed in';
     case ActivityType.SIGN_OUT:
-      return 'You signed out'; // 您已登出
+      return 'You signed out';
     case ActivityType.UPDATE_PASSWORD:
-      return 'You changed your password'; // 您已更改密码
+      return 'You changed your password';
     case ActivityType.DELETE_ACCOUNT:
-      return 'You deleted your account'; // 您已删除账户
+      return 'You deleted your account';
     case ActivityType.UPDATE_ACCOUNT:
-      return 'You updated your account'; // 您已更新账户
+      return 'You updated your account';
     case ActivityType.CREATE_TEAM:
-      return 'You created a new team'; // 您已创建新团队
+      return 'You created a new team';
     case ActivityType.REMOVE_TEAM_MEMBER:
-      return 'You removed a team member'; // 您已移除团队成员
+      return 'You removed a team member';
     case ActivityType.INVITE_TEAM_MEMBER:
-      return 'You invited a team member'; // 您已邀请团队成员
+      return 'You invited a team member';
     case ActivityType.ACCEPT_INVITATION:
-      return 'You accepted an invitation'; // 您已接受邀请
+      return 'You accepted an invitation';
     default:
-      return 'Unknown action occurred'; // 未知操作
+      return 'Unknown action occurred';
   }
 }
 
-// 活动日志页面组件
 export default async function ActivityPage() {
-  const logs = await getActivityLogs(); // 获取活动日志
+  const logs = await getActivityLogs();
 
   return (
     <section className="flex-1 p-4 lg:p-8">
       <h1 className="text-lg lg:text-2xl font-medium text-gray-900 mb-6">
-        Activity Log // 活动日志标题
+        Activity Log
       </h1>
       <Card>
         <CardHeader>
-          <CardTitle>Recent Activity</CardTitle> // 最近活动卡片标题
+          <CardTitle>Recent Activity</CardTitle>
         </CardHeader>
         <CardContent>
-          {logs.length > 0 ? ( // 如果有日志
+          {logs.length > 0 ? (
             <ul className="space-y-4">
               {logs.map((log) => {
-                const Icon = iconMap[log.action as ActivityType] || Settings; // 获取对应图标
+                const Icon = iconMap[log.action as ActivityType] || Settings;
                 const formattedAction = formatAction(
                   log.action as ActivityType
-                ); // 格式化活动类型
+                );
 
                 return (
                   <li key={log.id} className="flex items-center space-x-4">
                     <div className="bg-orange-100 rounded-full p-2">
-                      <Icon className="w-5 h-5 text-orange-600" /> // 图标
+                      <Icon className="w-5 h-5 text-orange-600" />
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-medium text-gray-900">
-                        {formattedAction} // 活动描述
-                        {log.ipAddress && ` from IP ${log.ipAddress}`} // 显示IP地址
+                        {formattedAction}
+                        {log.ipAddress && ` from IP ${log.ipAddress}`}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {getRelativeTime(new Date(log.timestamp))} // 相对时间
+                        {getRelativeTime(new Date(log.timestamp))}
                       </p>
                     </div>
                   </li>
                 );
               })}
             </ul>
-          ) : ( // 如果没有日志
+          ) : (
             <div className="flex flex-col items-center justify-center text-center py-12">
-              <AlertCircle className="h-12 w-12 text-orange-500 mb-4" /> // 警告图标
+              <AlertCircle className="h-12 w-12 text-orange-500 mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                No activity yet // 无活动提示
+                No activity yet
               </h3>
               <p className="text-sm text-gray-500 max-w-sm">
                 When you perform actions like signing in or updating your
-                account, they'll appear here. // 提示信息
+                account, they'll appear here.
               </p>
             </div>
           )}

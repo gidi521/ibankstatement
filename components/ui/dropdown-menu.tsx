@@ -1,4 +1,4 @@
-"use client" // 标记为客户端组件
+"use client"
 
 import * as React from "react"
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
@@ -8,27 +8,20 @@ import {
   DotFilledIcon,
 } from "@radix-ui/react-icons"
 
-import { cn } from "@/lib/utils" // 工具函数，用于合并class
+import { cn } from "@/lib/utils"
 
-// 下拉菜单组件
 const DropdownMenu = DropdownMenuPrimitive.Root
 
-// 下拉菜单触发器组件
 const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger
 
-// 下拉菜单组组件
 const DropdownMenuGroup = DropdownMenuPrimitive.Group
 
-// 下拉菜单Portal组件
 const DropdownMenuPortal = DropdownMenuPrimitive.Portal
 
-// 下拉菜单子菜单组件
 const DropdownMenuSub = DropdownMenuPrimitive.Sub
 
-// 下拉菜单单选组组件
 const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup
 
-// 下拉菜单子菜单触发器组件
 const DropdownMenuSubTrigger = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.SubTrigger>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubTrigger> & {
@@ -45,13 +38,12 @@ const DropdownMenuSubTrigger = React.forwardRef<
     {...props}
   >
     {children}
-    <ChevronRightIcon className="ml-auto h-4 w-4" /> // 右侧箭头图标
+    <ChevronRightIcon className="ml-auto h-4 w-4" />
   </DropdownMenuPrimitive.SubTrigger>
 ))
 DropdownMenuSubTrigger.displayName =
   DropdownMenuPrimitive.SubTrigger.displayName
 
-// 下拉菜单子菜单内容组件
 const DropdownMenuSubContent = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.SubContent>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubContent>
@@ -68,7 +60,6 @@ const DropdownMenuSubContent = React.forwardRef<
 DropdownMenuSubContent.displayName =
   DropdownMenuPrimitive.SubContent.displayName
 
-// 下拉菜单内容组件
 const DropdownMenuContent = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
@@ -88,7 +79,6 @@ const DropdownMenuContent = React.forwardRef<
 ))
 DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName
 
-// 下拉菜单项组件
 const DropdownMenuItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> & {
@@ -107,7 +97,6 @@ const DropdownMenuItem = React.forwardRef<
 ))
 DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName
 
-// 下拉菜单复选框项组件
 const DropdownMenuCheckboxItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.CheckboxItem>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.CheckboxItem>
@@ -123,7 +112,7 @@ const DropdownMenuCheckboxItem = React.forwardRef<
   >
     <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
       <DropdownMenuPrimitive.ItemIndicator>
-        <CheckIcon className="h-4 w-4" /> // 选中状态图标
+        <CheckIcon className="h-4 w-4" />
       </DropdownMenuPrimitive.ItemIndicator>
     </span>
     {children}
@@ -132,7 +121,6 @@ const DropdownMenuCheckboxItem = React.forwardRef<
 DropdownMenuCheckboxItem.displayName =
   DropdownMenuPrimitive.CheckboxItem.displayName
 
-// 下拉菜单单选项组件
 const DropdownMenuRadioItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.RadioItem>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.RadioItem>
@@ -147,7 +135,7 @@ const DropdownMenuRadioItem = React.forwardRef<
   >
     <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
       <DropdownMenuPrimitive.ItemIndicator>
-        <DotFilledIcon className="h-4 w-4 fill-current" /> // 选中状态图标
+        <DotFilledIcon className="h-4 w-4 fill-current" />
       </DropdownMenuPrimitive.ItemIndicator>
     </span>
     {children}
@@ -155,7 +143,6 @@ const DropdownMenuRadioItem = React.forwardRef<
 ))
 DropdownMenuRadioItem.displayName = DropdownMenuPrimitive.RadioItem.displayName
 
-// 下拉菜单标签组件
 const DropdownMenuLabel = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Label>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Label> & {
@@ -174,7 +161,6 @@ const DropdownMenuLabel = React.forwardRef<
 ))
 DropdownMenuLabel.displayName = DropdownMenuPrimitive.Label.displayName
 
-// 下拉菜单分隔线组件
 const DropdownMenuSeparator = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Separator>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Separator>
@@ -187,7 +173,6 @@ const DropdownMenuSeparator = React.forwardRef<
 ))
 DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName
 
-// 下拉菜单快捷键组件
 const DropdownMenuShortcut = ({
   className,
   ...props
