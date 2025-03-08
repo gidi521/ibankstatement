@@ -66,10 +66,17 @@ const UploadArea = () => {
     for (let i = 0; i < files.length; i++) {
       formData.append("files", files[i]);
     }
+  
+    // 获取sessionId
+    const sessionId = sessionStorage.getItem('sessionId');
+    
     try {
       const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
+        headers: {
+          'X-Session-Id': sessionId || '' // 添加sessionId到请求头
+        }
       });
       const data = await response.json();
       if (response.ok) {
@@ -84,7 +91,7 @@ const UploadArea = () => {
       console.error('文件上传失败:', error);
     }
   };
-  // 删除useEffect中的点击事件监听器
+  
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mt-8">

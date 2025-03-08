@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { use, useState } from 'react';
+import { use, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { CircleIcon, Home, LogOut } from 'lucide-react';
 import {
@@ -14,6 +14,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useUser } from '@/lib/auth';
 import { signOut } from '@/app/(login)/actions';
 import { useRouter } from 'next/navigation';
+import { v4 as uuidv4 } from 'uuid';
+// import { db } from '@/lib/db';
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -21,6 +23,26 @@ function Header() {
   const user = use(userPromise);
   const router = useRouter();
 
+  useEffect(() => {
+    // 检查并生成唯一标识
+    const sessionId = sessionStorage.getItem('sessionId');
+    if (!sessionId) {
+      const newId = uuidv4();
+      sessionStorage.setItem('sessionId', newId);
+    }
+  }, []);
+  
+  useEffect(() => {
+    const sessionId = sessionStorage.getItem('sessionId');
+    if (user && sessionId) {
+      // 检查数据库中是否已有session ID
+      const dbSessionId = ('sessionId');
+    if (dbSessionId && dbSessionId !== sessionId) {
+      // 使用数据库中的session ID
+      sessionStorage.setItem('sessionId', dbSessionId);
+    }
+  }
+}, [user]);
   async function handleSignOut() {
     await signOut();
     router.refresh();

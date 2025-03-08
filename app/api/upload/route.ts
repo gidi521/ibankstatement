@@ -6,10 +6,23 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const files = formData.getAll('files') as File[];
-    const uploadDir = path.join(process.cwd(), 'public', 'upload', 'pdf');
+    const sessionId = request.headers.get('x-session-id');
 
-    // 确保上传目录存在
-    await fs.mkdir(uploadDir, { recursive: true });
+    if (!sessionId) {
+      return NextResponse.json(
+        { error: '缺少 session-id' },
+        { status: 400 }
+      );
+    }
+
+    const uploadDir = path.join(process.cwd(), 'public', 'upload', sessionId, 'pdf');
+
+    // 如果目录不存在则创建
+    try {
+      await fs.access(uploadDir);
+    } catch (error) {
+      await fs.mkdir(uploadDir, { recursive: true });
+    }
 
     // 处理每个文件
     for (const file of files) {

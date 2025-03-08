@@ -146,10 +146,18 @@ export default function HomePage() {
     for (let i = 0; i < files.length; i++) {
       formData.append("files", files[i]);
     }
+
+    // 获取sessionId
+    const sessionId = sessionStorage.getItem('sessionId');
+
+
     try {
       const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
+        headers: {
+          'X-Session-Id': sessionId || '' // 添加sessionId到请求头
+        }
       });
       const data = await response.json();
       if (response.ok) {
