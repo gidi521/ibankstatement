@@ -115,11 +115,12 @@ const signUpSchema = z.object({
   email: z.string().email(),         // 邮箱格式验证
   password: z.string().min(8),       // 密码长度验证
   inviteId: z.string().optional(),   // 可选参数：邀请ID
+  uuid: z.string(),  // 添加uuid字段
 });
 
 // 用户注册操作
 export const signUp = validatedAction(signUpSchema, async (data, formData) => {
-  const { email, password, inviteId } = data;
+  const { uuid, email, password, inviteId } = data;
 
   // 检查用户是否已存在
   const existingUser = await db
@@ -141,6 +142,7 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
 
   // 创建新用户对象
   const newUser: NewUser = {
+    uuid,
     email,
     passwordHash,
     role: 'owner', // Default role, will be overridden if there's an invitation

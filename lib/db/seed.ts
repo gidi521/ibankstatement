@@ -41,6 +41,7 @@ async function createStripeProducts() {
 
 async function seed() {
   const email = 'test@test.com';
+  const uuid = '5d6a0ade-67e1-4b0b-baff-001c8bc0986a';
   const password = 'admin123';
   const passwordHash = await hashPassword(password);
 
@@ -48,6 +49,7 @@ async function seed() {
     .insert(users)
     .values([
       {
+        uuid: uuid,
         email: email,
         passwordHash: passwordHash,
         role: "owner",

@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS "teams" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "users" (
 	"id" serial PRIMARY KEY NOT NULL,
+	"uuid" varchar(36) NOT NULL UNIQUE,
 	"name" varchar(100),
 	"email" varchar(255) NOT NULL,
 	"password_hash" text NOT NULL,

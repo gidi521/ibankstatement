@@ -36,7 +36,7 @@ function Header() {
     const sessionId = sessionStorage.getItem('sessionId');
     if (user && sessionId) {
       // 检查数据库中是否已有session ID
-      const dbSessionId = ('sessionId');
+      const dbSessionId = user.uuid;
     if (dbSessionId && dbSessionId !== sessionId) {
       // 使用数据库中的session ID
       sessionStorage.setItem('sessionId', dbSessionId);
