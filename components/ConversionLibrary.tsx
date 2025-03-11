@@ -3,7 +3,11 @@
 import React from "react";
 import { useEffect, useState } from 'react';
 
-const ConversionLibrary = () => {
+interface ConversionLibraryProps {
+  refreshKey?: number;
+}
+
+const ConversionLibrary = ({ refreshKey }: ConversionLibraryProps) => {
   const [files, setFiles] = useState<{name: string, modified: string}[]>([]);
   const [sessionId, setSessionId] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -16,8 +20,7 @@ const ConversionLibrary = () => {
 
   useEffect(() => {
     const id = sessionStorage.getItem("sessionId") || "";
-    // setSessionId(id);
-  
+    
     if (id) {
       fetch(`/api/files?sessionId=${id}`)
         .then(response => response.json())
@@ -30,7 +33,7 @@ const ConversionLibrary = () => {
         })
         .catch(error => console.error("Error fetching files:", error));
     }
-  }, []);
+  }, [refreshKey]); // Use refreshKey as a dependency
   return (
     <section className="py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { FileText } from "lucide-react";
 
-const UploadArea = () => {
+const UploadArea = ({ onUploadSuccess }: { onUploadSuccess?: () => void }) => {
   const dropRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
@@ -80,10 +80,12 @@ const UploadArea = () => {
       });
       const data = await response.json();
       if (response.ok) {
-        console.log("文件上传成功");
-        alert("文件上传成功");
-        // 添加上传成功的文件到状态
+        // console.log("文件上传成功");
+        // alert("文件上传成功");
         setUploadedFiles(prev => [...prev, ...Array.from(files)]);
+        if (onUploadSuccess) {
+          onUploadSuccess(); // 调用回调函数,触发conversionLibrary的重新渲染
+        }
       } else {
         console.error(data.error);
       }
