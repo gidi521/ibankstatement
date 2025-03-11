@@ -69,6 +69,7 @@ const ConversionLibrary = ({ refreshKey }: ConversionLibraryProps) => {
                 <th className="text-left text-black">PDF</th>
                 <th className="text-left text-black">STATUS</th>
                 <th className="text-left text-black">DATE</th>
+                <th className="text-left text-black">DOWNLOAD</th>
               </tr>
             </thead>
             <tbody>
@@ -87,6 +88,15 @@ const ConversionLibrary = ({ refreshKey }: ConversionLibraryProps) => {
                         second: '2-digit',
                         hour12: false
                       })}
+                    </td>
+                    <td className="text-left text-black">
+                      <a 
+                        href={`/api/download?filename=${encodeURIComponent(file.name)}&uuid=${sessionStorage.getItem("sessionId") || ""}`}
+                        download
+                        className="text-blue-500 hover:text-blue-700"
+                      >
+                        Download CSV
+                      </a>
                     </td>
                   </tr>
                 ))
