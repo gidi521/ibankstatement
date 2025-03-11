@@ -177,7 +177,7 @@ export default function HomePage() {
       {/* hero section */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-18">
-          <div className="lg:grid lg:grid-cols-12 lg:gap-28">
+          <div className="lg:grid lg:grid-cols-12 lg:gap-14">
             <div className="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
               <h1 className="text-4xl font-bold text-gray-900 tracking-tight sm:text-5xl md:text-6xl">
                 Convert Your BankStatements
@@ -206,7 +206,7 @@ export default function HomePage() {
                 onClick={handleClick}
                 className={`border-dashed border-2 ${
                   isDragging ? "border-blue-500" : "border-gray-300"
-                } bg-blue-50 hover:bg-blue-100 h-75 w-120 rounded-lg flex flex-col items-center justify-center cursor-pointer`}
+                } bg-blue-50 hover:bg-blue-100 h-[40vh] w-[80vw] max-h-[320px] max-w-[420px] rounded-lg flex flex-col items-center justify-center cursor-pointer`}
                 onDragEnter={handleDragEnter}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
