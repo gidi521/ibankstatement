@@ -10,6 +10,8 @@ const UploadArea = ({ onUploadSuccess }: { onUploadSuccess?: () => void }) => {
   const dropRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [processingTimes, setProcessingTimes] = useState<number[]>([]); // 新增：存储每个文件的处理时间
+  const [progress, setProgress] = useState<number[]>([]); // 新增：存储每个文件的进度
   const fileInputRef = useRef<HTMLInputElement>(null);
   const handleClick = () => {
     if (fileInputRef.current) {
@@ -49,6 +51,12 @@ const UploadArea = ({ onUploadSuccess }: { onUploadSuccess?: () => void }) => {
       uploadFiles(files);
     }
   };
+
+  // 新增：计算处理时间的函数
+  const calculateProcessingTime = (totalLength: number) => {
+    return Math.ceil((totalLength / 100000) * 5);
+  };
+
   const uploadFiles = async (files: FileList) => {
     // 验证文件类型
     for (let i = 0; i < files.length; i++) {
@@ -71,7 +79,7 @@ const UploadArea = ({ onUploadSuccess }: { onUploadSuccess?: () => void }) => {
     const sessionId = sessionStorage.getItem('sessionId');
     
     try {
-      const response = await fetch('/api/upload', {
+      const response = await fetch('/api/python', {
         method: 'POST',
         body: formData,
         headers: {
@@ -79,10 +87,81 @@ const UploadArea = ({ onUploadSuccess }: { onUploadSuccess?: () => void }) => {
         }
       });
       const data = await response.json();
+      // 文件返回结构是
+      // {
+      //   'message': '文件已接收，正在处理...',
+      //   'results': [{
+      //     'file_name': filename,
+      //     'node_count': node_count,
+      //     'total_length': total_length
+      //   },{
+      //     'file_name': filename,
+      //     'node_count': node_count,
+      //     'total_length': total_length
+      //   }]
+      // }
+      
       if (response.ok) {
-        // console.log("文件上传成功");
-        // alert("文件上传成功");
+        console.log(data);
         setUploadedFiles(prev => [...prev, ...Array.from(files)]);
+        
+        const times = data.results.map((result: any) => calculateProcessingTime(result.total_length));
+        setProcessingTimes(times);
+        
+        setProgress(new Array(times.length).fill(0));
+        
+        times.forEach((time: number, index: number) => {
+          const interval = 1000; // 每秒更新一次
+          const steps = time;
+          let currentStep = 0;
+          let isPaused = false;
+          
+          const timer = setInterval(async () => {
+            if (!isPaused && currentStep < steps - 2) {
+              currentStep++;
+              setProgress(prev => {
+                const newProgress = [...prev];
+                newProgress[index] = (currentStep / steps) * 100;
+                return newProgress;
+              });
+            } else if (!isPaused) {
+              // 进入最后2秒，暂停进度条
+              isPaused = true;
+              
+              // 每2秒检查一次文件
+              const checkFileInterval = setInterval(async () => {
+                try {
+                  const response = await fetch(`/api/files?sessionId=${sessionId}`);
+                  const data = await response.json();
+                  
+                  // 检查是否有同名csv文件
+                  const csvExists = data.files.some((file: any) => 
+                    file.name === files[index].name.replace('.pdf', '.csv')
+                  );
+                  
+                  if (csvExists) {
+                    // 文件存在，完成进度条
+                    setProgress(prev => {
+                      const newProgress = [...prev];
+                      newProgress[index] = 100;
+                      return newProgress;
+                    });
+                    clearInterval(checkFileInterval);
+                    clearInterval(timer);
+                    
+                    // 触发ConversionLibrary刷新
+                    if (onUploadSuccess) {
+                      onUploadSuccess();
+                    }
+                  }
+                } catch (error) {
+                  console.error('Error checking file:', error);
+                }
+              }, 2000);
+            }
+          }, interval);
+        });
+
         if (onUploadSuccess) {
           onUploadSuccess(); // 调用回调函数,触发conversionLibrary的重新渲染
         }
@@ -136,14 +215,30 @@ const UploadArea = ({ onUploadSuccess }: { onUploadSuccess?: () => void }) => {
           {uploadedFiles.length > 0 ? (
             <div className="grid grid-cols-3 gap-4">
               {uploadedFiles.map((file, index) => (
-                <div key={index} className="flex items-center p-3 border rounded-lg">
-                  <FileText className="h-6 w-6 text-blue-500 mr-2" />
-                  <div className="truncate">
-                    <p className="text-sm font-medium truncate">{file.name}</p>
-                    <p className="text-xs text-gray-500">
-                      {(file.size / 1024 / 1024).toFixed(2)} MB
-                    </p>
+                <div key={index} className="flex flex-col p-3 border rounded-lg">
+                  <div className="flex items-center">
+                    <FileText className="h-6 w-6 text-blue-500 mr-2" />
+                    <div className="truncate">
+                      <p className="text-sm font-medium truncate">{file.name}</p>
+                      <p className="text-xs text-gray-500">
+                        {(file.size / 1024 / 1024).toFixed(2)} MB
+                      </p>
+                    </div>
                   </div>
+                  {/* 新增：进度条 */}
+                  {processingTimes[index] && (
+                    <div className="mt-2">
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-blue-500 h-2 rounded-full"
+                          style={{ width: `${progress[index]}%` }}
+                        ></div>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        预计处理时间：{processingTimes[index]}秒
+                      </p>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
